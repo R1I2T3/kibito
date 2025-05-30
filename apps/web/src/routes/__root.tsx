@@ -1,4 +1,3 @@
-import Header from "@/components/header";
 import Loader from "@/components/loader";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -50,7 +49,9 @@ function RootComponent() {
     select: (s) => s.isLoading,
   });
 
-  const [client] = useState<RouterClient<typeof appRouter>>(() => createORPCClient(link));
+  const [client] = useState<RouterClient<typeof appRouter>>(() =>
+    createORPCClient(link)
+  );
   const [orpcUtils] = useState(() => createORPCReactQueryUtils(client));
 
   return (
@@ -59,7 +60,6 @@ function RootComponent() {
       <ORPCContext.Provider value={orpcUtils}>
         <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
           <div className="grid grid-rows-[auto_1fr] h-svh">
-            <Header />
             {isFetching ? <Loader /> : <Outlet />}
           </div>
           <Toaster richColors />
