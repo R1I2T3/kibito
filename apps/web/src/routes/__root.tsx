@@ -17,6 +17,7 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import "../index.css";
+import Header from "@/components/Header";
 
 export interface RouterAppContext {
   orpc: typeof orpc;
@@ -28,7 +29,7 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
   head: () => ({
     meta: [
       {
-        title: "My App",
+        title: "Kibito",
       },
       {
         name: "description",
@@ -53,20 +54,24 @@ function RootComponent() {
     createORPCClient(link)
   );
   const [orpcUtils] = useState(() => createORPCReactQueryUtils(client));
-
   return (
     <>
       <HeadContent />
       <ORPCContext.Provider value={orpcUtils}>
         <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-          <div className="grid grid-rows-[auto_1fr] h-svh">
+          <div className="grid grid-rows-[auto_1fr] h-svh px-4">
+            <Header />
             {isFetching ? <Loader /> : <Outlet />}
           </div>
           <Toaster richColors />
         </ThemeProvider>
       </ORPCContext.Provider>
-      <TanStackRouterDevtools position="bottom-left" />
-      <ReactQueryDevtools position="bottom" buttonPosition="bottom-right" />
+      {import.meta.env.VITE_ENV === "dev" && (
+        <TanStackRouterDevtools position="bottom-left" />
+      )}
+      {import.meta.env.VITE_ENV === "dev" && (
+        <ReactQueryDevtools position="bottom" buttonPosition="bottom-right" />
+      )}
     </>
   );
 }
