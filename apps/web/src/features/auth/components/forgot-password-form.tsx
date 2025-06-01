@@ -1,14 +1,50 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/Input";
 import { FormProvider, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { Link } from "@tanstack/react-router";
+import { authClient } from "@/lib/auth-client";
+import { forgotPasswordSchema } from "../schema";
+import type { ForgotPasswordType } from "../schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 const ForgotPasswordForm = () => {
-  const form = useForm();
-  const onSubmit = (data) => {};
-  const loading = false; // Replace with actual loading state if needed
+  const [loading, setLoading] = useState(false);
+  const form = useForm({
+    resolver: zodResolver(forgotPasswordSchema),
+    defaultValues: {
+      email: "",
+    },
+    mode: "onChange",
+  });
+  const onSubmit = async (data: ForgotPasswordType) => {
+    setLoading(true);
+    await authClient
+      .forgetPassword(
+        {
+          email: data.email,
+          redirectTo: `${import.meta.env.VITE_APP_URL}/reset-password`,
+        },
+        {
+          onSuccess: () => {
+            form.reset();
+            toast.success(
+              "Forgot password verification Mail send successfully"
+            );
+          },
+          onError: (payload) => {
+            toast.error(
+              `Error: ${payload.error.message || "Failed To Send Message"}`
+            );
+          },
+        }
+      )
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   return (
     <div>
