@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { RPCHandler } from "@orpc/server/fetch";
 import { createContext } from "./lib/context";
-import { appRouter } from "./routers/index";
+import { appRouter } from "./routes";
 import { auth } from "./lib/auth";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
@@ -35,17 +35,18 @@ app.use("/rpc/*", async (c, next) => {
   await next();
 });
 
-
-
 app.get("/", (c) => {
   return c.text("OK");
 });
 
 import { serve } from "@hono/node-server";
 
-serve({
-  fetch: app.fetch,
-  port: 3000,
-}, (info) => {
-  console.log(`Server is running on http://localhost:${info.port}`);
-});
+serve(
+  {
+    fetch: app.fetch,
+    port: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
+  },
+  (info) => {
+    console.log(`Server is running on http://localhost:${info.port}`);
+  }
+);
